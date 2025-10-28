@@ -23,6 +23,7 @@ jobs:
 
       - name: Install dependencies
         run: npm install
+        working-directory: backend
 
       - name: Export ephemeral JWT secret + other env vars into runner
         run: |
@@ -40,6 +41,7 @@ jobs:
           sleep 6
           # optionally print last lines of log to verify startup (does NOT show secret)
           tail -n 50 backend.log || true
+        working-directory: backend
 
       - name: Health check root endpoint
         run: |
@@ -63,6 +65,7 @@ jobs:
             cat backend.log
             exit 1
           fi
+        working-directory: backend
 
       - name: Login student (should return 200)
         run: |
@@ -82,8 +85,9 @@ jobs:
             cat backend.log
             exit 1
           fi
+        working-directory: backend
 
-      - name: Register & login teacher, parent, school (optional tests)
+      - name: Register & login teacher, parent, school
         run: |
           set -e
           # teacher
