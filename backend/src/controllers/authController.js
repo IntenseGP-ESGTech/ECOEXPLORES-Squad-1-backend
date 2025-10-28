@@ -68,14 +68,14 @@ const register = async (req, res) => {
 };
 
 const login = async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: 'Email e senha obrigatórios' });
+  const { identifier, password } = req.body; 
+  if (!identifier || !password) return res.status(400).json({ message: 'CPF/CNPJ e senha obrigatórios' });
 
   const user = users.find(u =>
-    u.emailAluno === email ||
-    u.emailCorporativo === email ||
-    u.emailProfessor === email ||
-    u.emailResponsavel === email
+    u.cnpj === identifier ||
+    u.cpf === identifier ||
+    u.cpfAluno === identifier ||
+    u.cpfResponsavel === identifier
   );
 
   if (!user) return res.status(401).json({ message: 'Credenciais inválidas' });
@@ -87,5 +87,6 @@ const login = async (req, res) => {
 
   res.json({ user, token });
 };
+
 
 module.exports = { register, login, users };
