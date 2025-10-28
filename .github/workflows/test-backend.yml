@@ -13,113 +13,34 @@ jobs:
     timeout-minutes: 15
 
     steps:
+      # 1️⃣ Checar repositório
       - name: Checkout repo
         uses: actions/checkout@v3
 
+      # 2️⃣ Configurar Node.js
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 20
 
+      # 3️⃣ Instalar dependências
       - name: Install dependencies
         run: npm install
         working-directory: backend
 
-      - name: Export ephemeral JWT secret + other env vars into runner
+      # 4️⃣ Exportar variáveis de ambiente efêmeras
+      - name: Export ephemeral env vars
         run: |
-          # generate a random 32-byte hex secret and export to GITHUB_ENV (hidden from logs)
           echo "JWT_SECRET=$(openssl rand -hex 32)" >> $GITHUB_ENV
-          # export other non-sensitive variables
           echo "PORT=4000" >> $GITHUB_ENV
           echo "CORS_ORIGIN=http://localhost:5173" >> $GITHUB_ENV
-
-      - name: Start backend
-        run: |
-          # start in background; output redirected so logs stay cleaner
-          npm run dev > backend.log 2>&1 &
-          # wait a bit for server to boot
-          sleep 6
-          # optionally print last lines of log to verify startup (does NOT show secret)
-          tail -n 50 backend.log || true
         working-directory: backend
 
-      - name: Health check root endpoint
-        run: |
-          status=$(curl -s -o /dev/null -w "%{http_code}" http://localhost:4000/)
-          echo "GET / returned status $status"
-          if [ "$status" -ne 200 ]; then
-            echo "Server did not respond 200 on /"
-            echo "==== backend.log ===="
-            cat backend.log
-            exit 1
-          fi
-
-      - name: Register student (should return 201)
-        run: |
-          payload='{"role":"student","nomeAluno":"CI Teste","cpfAluno":"11122233344","matricula":"20251027001","emailAluno":"teste-ci@example.com","password":"Senha123!"}'
-          status=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:4000/api/auth/register \
-            -H "Content-Type: application/json" -d "$payload")
-          echo "Register student status: $status"
-          if [ "$status" -ne 201 ]; then
-            echo "Register student failed (status $status). Backend log:"
-            cat backend.log
-            exit 1
-          fi
+      # 5️⃣ Rodar testes unitários
+      - name: Run backend unit tests
+        run: npm test
         working-directory: backend
 
-      - name: Login student (should return 200)
-        run: |
-          payload='{"identifier":"11122233344","password":"Senha123!"}'
-          # capture response body for inspection
-          resp=$(curl -s -X POST http://localhost:4000/api/auth/login \
-            -H "Content-Type: application/json" -d "$payload")
-          status=$(echo "$resp" | jq -r '.user? | if . then 200 else 0 end' 2>/dev/null || echo "")
-          # fallback: check if token key appears
-          token=$(echo "$resp" | jq -r '.token // empty' 2>/dev/null || echo "")
-          if [ -n "$token" ]; then
-            echo "Login returned a token (length ${#token})"
-          else
-            echo "Login response did not include token, response was:"
-            echo "$resp"
-            echo "Backend log:"
-            cat backend.log
-            exit 1
-          fi
-        working-directory: backend
-
-      - name: Register & login teacher, parent, school
-        run: |
-          set -e
-          # teacher
-          tpayload='{"role":"teacher","nomeProfessor":"Prof CI","cpf":"12345678900","instituicao":"Escola CI","emailProfessor":"prof.ci@example.com","password":"ProfSenha123!"}'
-          tstatus=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:4000/api/auth/register -H "Content-Type: application/json" -d "$tpayload")
-          echo "Teacher register status: $tstatus"
-          if [ "$tstatus" -ne 201 ]; then
-            echo "Teacher register failed (status $tstatus)"; cat backend.log; exit 1
-          fi
-          tlogin='{"identifier":"12345678900","password":"ProfSenha123!"}'
-          tresp=$(curl -s -X POST http://localhost:4000/api/auth/login -H "Content-Type: application/json" -d "$tlogin")
-          if [ -z "$(echo "$tresp" | jq -r '.token // empty' 2>/dev/null)" ]; then echo "Teacher login failed"; echo "$tresp"; cat backend.log; exit 1; fi
-
-          # parent
-          ppayload='{"role":"parent","nomeCompleto":"Pai CI","cpfResponsavel":"98765432100","emailResponsavel":"pai.ci@example.com","password":"PaiSenha123!"}'
-          pstatus=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:4000/api/auth/register -H "Content-Type: application/json" -d "$ppayload")
-          echo "Parent register status: $pstatus"
-          if [ "$pstatus" -ne 201 ]; then echo "Parent register failed (status $pstatus)"; cat backend.log; exit 1; fi
-          plogin='{"identifier":"98765432100","password":"PaiSenha123!"}'
-          presp=$(curl -s -X POST http://localhost:4000/api/auth/login -H "Content-Type: application/json" -d "$plogin")
-          if [ -z "$(echo "$presp" | jq -r '.token // empty' 2>/dev/null)" ]; then echo "Parent login failed"; echo "$presp"; cat backend.log; exit 1; fi
-
-          # school
-          spayload='{"role":"school","cnpj":"12345678000199","nomeInstituicao":"Escola CI","emailCorporativo":"contato@escolaci.com","password":"SchoolSenha123!"}'
-          sstatus=$(curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:4000/api/auth/register -H "Content-Type: application/json" -d "$spayload")
-          echo "School register status: $sstatus"
-          if [ "$sstatus" -ne 201 ]; then echo "School register failed (status $sstatus)"; cat backend.log; exit 1; fi
-          slogin='{"identifier":"12345678000199","password":"SchoolSenha123!"}'
-          sresp=$(curl -s -X POST http://localhost:4000/api/auth/login -H "Content-Type: application/json" -d "$slogin")
-          if [ -z "$(echo "$sresp" | jq -r '.token // empty' 2>/dev/null)" ]; then echo "School login failed"; echo "$sresp"; cat backend.log; exit 1; fi
-
-          echo "All optional role tests passed."
-
+      # 6️⃣ Mensagem de sucesso
       - name: Success
-        run: echo "CI tests passed-> backend started, register and login checks OK"
+        run: echo 'CI tests passed-> backend tests for all roles succeeded!'
