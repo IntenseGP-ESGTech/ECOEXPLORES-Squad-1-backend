@@ -1,0 +1,304 @@
+/* Home.module.css */
+
+/*
+ * @section Container Principal da Página
+ * Define o layout base e o fundo de toda a viewport.
+ * Garante que ocupe a totalidade da área visível e controle de transbordamento.
+ */
+.container {
+    min-height: 100vh; /* Garante que o container ocupe no mínimo 100% da altura da viewport, crucial para layouts de tela cheia. */
+    width: 100vw;      /* Garante que o container ocupe 100% da largura da viewport. */
+    /*
+     * background-image: Define múltiplas camadas de fundo, empilhadas da frente para trás.
+     * `radial-gradient` (primeiro) é a camada superior, e `url()` (segundo) é a camada inferior.
+     * NOTA: Para que a `url()` seja visível, o gradiente DEVE ter transparência (e.g., `rgba()`).
+     * Se o gradiente for opaco (como `#55B1E6`), ele cobrirá completamente a imagem de fundo.
+     */
+    background-image: url('../assets/background2.svg'), radial-gradient(circle, #55B1E6, #26119D);
+    background-size: cover;       /* Redimensiona a imagem de fundo para cobrir toda a área disponível, mantendo a proporção. */
+    background-position: center;  /* Centraliza a imagem de fundo dentro do container. */
+    background-repeat: no-repeat; /* Impede que a imagem de fundo se repita, garantindo uma única imagem. */
+    display: flex;                /* Habilita o modelo de layout flexbox para o alinhamento de itens filhos. */
+    align-items: center;          /* Alinha os itens filhos ao centro verticalmente (eixo cruzado) dentro do container. */
+    justify-content: flex-end;    /* Alinha os itens filhos à direita horizontalmente (eixo principal) dentro do container. */
+    position: relative;           /* Define o contexto de posicionamento para elementos filhos posicionados absolutamente. */
+    padding: 20px;                /* Adiciona um preenchimento interno de 20px em todos os lados. */
+    box-sizing: border-box;       /* Inclui o padding e a borda na largura e altura total do elemento, evitando que o padding aumente o tamanho. */
+    overflow: hidden;             /* Oculta qualquer conteúdo que transborde os limites do container, prevenindo barras de rolagem indesejadas na página. */
+}
+
+/*
+ * @section Logo da Aplicação
+ * Posicionamento e dimensionamento do logotipo no canto superior esquerdo.
+ * Z-index elevado para garantir visibilidade sobre elementos de fundo.
+ */
+.logo {
+    position: absolute; /* Posiciona o logo de forma absoluta em relação ao seu pai posicionado (.container). */
+    top: 43px;          /* Distância do topo do container. */
+    left: 20px;         /* Distância da borda esquerda do container. */
+    height: 257px;      /* Altura fixa do logotipo. */
+    width: 263px;       /* Largura fixa do logotipo. */
+    z-index: 90;        /* Define a ordem de empilhamento, garantindo que o logo apareça acima de elementos com z-index menor. */
+    /* Sugestão de Otimização: Considere usar `max-width` e `max-height` com unidades relativas (`vw`/`vh`)
+     * para melhor responsividade em diferentes tamanhos de tela e evitar transbordamento.
+     * Ex: `max-width: 20vw; height: auto;`
+     */
+}
+
+/*
+ * @section Botão de Menu (Avatar / Toggle)
+ * Estiliza o avatar clicável que alterna a visibilidade do menu lateral.
+ * Posicionado abaixo do logo principal.
+ */
+.menuFotoToggle {
+    position: absolute;   /* Posiciona o avatar de forma absoluta. */
+    /* Calcula o 'top' para posicionar o avatar abaixo do logo com um espaçamento.
+     * NOTA: Este cálculo pode precisar ser ajustado se o zoom do navegador não for 100%. */
+    top: calc(43px + 257px + 15px);
+    left: 59px;           /* Distância da borda esquerda. */
+    height: 98px;         /* Altura fixa do avatar. */
+    width: 98px;          /* Largura fixa do avatar. */
+    z-index: 999;         /* Z-index muito alto para garantir que o avatar esteja sempre acima do menu Sidebar quando o menu está fechado. */
+    cursor: pointer;      /* Altera o cursor para indicar que o elemento é clicável. */
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades alteradas em 0.3 segundos. */
+    border-radius: 50%;   /* Torna o avatar um círculo. */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Adiciona uma sombra suave para profundidade. */
+}
+
+/*
+ * @section Efeito de Hover do Botão de Menu (Avatar)
+ */
+.menuFotoToggle:hover {
+    transform: translateY(-2px); /* Move o avatar ligeiramente para cima no hover, criando um efeito "flutuante". */
+}
+
+/*
+ * @section Estado Oculto do Botão de Menu (Avatar)
+ * Estilos aplicados ao avatar quando o menu lateral está aberto, tornando-o invisível e não interativo.
+ */
+.menuFotoHidden {
+    opacity: 0;           /* Torna o avatar completamente transparente. */
+    pointer-events: none; /* Desativa eventos de mouse/toque no avatar quando invisível, impedindo cliques acidentais. */
+    transform: translateY(-100px); /* Move o avatar para cima fora da tela, para uma transição mais limpa. */
+}
+
+/*
+ * @section Wrapper para o Sidebar
+ * Este elemento atua como um container para o componente Sidebar, controlando seu posicionamento e animação
+ * de deslizamento para dentro/fora da tela.
+ */
+.sidebarWrapper {
+    position: absolute;           /* Posiciona o wrapper de forma absoluta. */
+    width: 160px;                 /* Largura fixa do wrapper do Sidebar. NOTA: Este valor é escalado (120px * 4/3) presumindo 75% de zoom. */
+    
+    /* --- DEFINIÇÃO DE VARIÁVEIS CSS PARA DIMENSÕES E ESPAÇAMENTOS --- */
+    /* Variáveis permitem ajustes fáceis e consistentes em cálculos. */
+    --sidebar-top: 300px; /* Distância do topo do container até o topo do Sidebar. NOTA: Este valor é escalado (170px * 4/3). */
+    --sidebar-left: 59px; /* Distância da esquerda do container até o Sidebar. NOTA: Este valor é escalado (20px * 4/3). */
+
+    --return-button-bottom: 26.67px; /* Distância do bottom do container até o bottom do botão de retorno. NOTA: Escalado. */
+    --return-button-height: 72px; /* Altura do botão de retorno. CRÍTICO: CONFIRME ESTE VALOR NO DEVTOOLS COM O ZOOM EM 75%. */
+    --spacing-between-sidebar-and-button: 20px; /* Espaço entre o final do Sidebar e o topo do botão de retorno. NOTA: Escalado. */
+
+    /* --- APLICAÇÃO DAS POSIÇÕES E ALTURA COM AS VARIÁVEIS --- */
+    top: var(--sidebar-top);  /* Posiciona o Sidebar a partir do topo. */
+    left: var(--sidebar-left); /* Posiciona o Sidebar a partir da esquerda. */
+
+    height: calc(
+        100vh                            /* Altura total da viewport */
+        - var(--sidebar-top)             /* Subtrai a distância do topo até o início do Sidebar */
+        - var(--return-button-bottom)    /* Subtrai o espaçamento inferior (bottom) do botão de retorno */
+        - var(--return-button-height)    /* Subtrai a altura do botão de retorno */
+        - var(--spacing-between-sidebar-and-button) /* Subtrai o espaçamento entre o Sidebar e o botão */
+    ); /* Calcula a altura do Sidebar para que ele se ajuste entre o logo e o botão de retorno, com espaçamento. */
+
+    z-index: 1000;                      /* Z-index muito alto para garantir que o Sidebar apareça acima de todo o conteúdo principal quando aberto. */
+    transform: translateX(-100%);       /* Esconde o Sidebar inicialmente movendo-o para fora da tela à esquerda. */
+    transition: transform 0.3s ease-out, opacity 0.3s ease; /* Transição suave para o efeito de deslizar e aparecer/desaparecer. */
+    pointer-events: none;               /* Desativa eventos de mouse/toque quando o Sidebar está escondido. */
+    opacity: 0;                         /* Torna o Sidebar invisível inicialmente. */
+
+    overflow-y: scroll;                 /* Permite a rolagem vertical dentro do Sidebar se o conteúdo exceder sua altura. */
+    box-sizing: border-box;             /* Garante que padding e borda não aumentem a largura/altura total do wrapper. */
+
+    /* Regras para esconder a barra de rolagem visualmente (específicas do navegador). */
+    &::-webkit-scrollbar { /* Para navegadores WebKit (Chrome, Safari, Edge) */
+        width: 0;          /* Torna a barra de rolagem sem largura. */
+        background: transparent; /* Fundo transparente para a barra de rolagem. */
+    }
+    scrollbar-width: none; /* Para Firefox: esconde a barra de rolagem. */
+    -ms-overflow-style: none; /* Para Internet Explorer/Edge (versões mais antigas): esconde a barra de rolagem. */
+}
+
+/*
+ * @section Estado Aberto do Sidebar
+ * Estilos aplicados quando o menu lateral está visível.
+ */
+.sidebarWrapper.sidebarOpen {
+    transform: translateX(0); /* Move o Sidebar para a posição visível (0 de deslocamento horizontal). */
+    pointer-events: all;      /* Ativa eventos de mouse/toque quando o Sidebar está visível. */
+    opacity: 1;               /* Torna o Sidebar completamente visível. */
+}
+
+/*
+ * @section Ilustração Decorativa (Mundo à Direita)
+ * Estiliza uma imagem de fundo ou ilustração posicionada no canto inferior direito.
+ */
+.mundoDireita {
+    position: absolute; /* Posiciona a imagem de forma absoluta. */
+    bottom: 0;          /* Alinha a imagem à borda inferior do container. */
+    right: 0;           /* Alinha a imagem à borda direita do container. */
+    height: 732px;      /* Altura fixa da ilustração. */
+    width: 1098px;      /* Largura fixa da ilustração. */
+    z-index: 80;        /* Z-index para a ordem de empilhamento, geralmente abaixo de elementos de UI principais. */
+    /* Sugestão de Otimização: Considere escalar estes valores para 75% de zoom se ainda estiverem causando rolagem ou não se ajustando bem. */
+    /* Ex: `height: calc(732px * 4/3); width: calc(1098px * 4/3);` */
+    max-width: 100vw;   /* Garante que a imagem não ultrapasse a largura da viewport. */
+    max-height: 100vh;  /* Garante que a imagem não ultrapasse a altura da viewport. */
+    object-fit: cover;  /* Redimensiona a imagem para cobrir a área, cortando se necessário, mantendo a proporção. */
+}
+
+/*
+ * @section Elemento Central (ODS)
+ * Estiliza o elemento principal ou ilustração central da tela, geralmente um gráfico ou imagem circular.
+ */
+.ods {
+    position: absolute;   /* Posiciona o elemento de forma absoluta. */
+    top: 50%;             /* Alinha o centro vertical do elemento ao centro vertical do container. */
+    left: 50%;            /* Alinha o centro horizontal do elemento ao centro horizontal do container. */
+    transform: translate(-50%, -50%); /* Ajusta o elemento para que seu próprio centro fique no ponto 50%/50%. */
+    height: 630px;        /* Altura fixa do elemento. */
+    width: 630px;         /* Largura fixa do elemento. */
+    z-index: 85;          /* Z-index para a ordem de empilhamento. */
+    /* Sugestão de Otimização: Considere escalar estes valores para 75% de zoom se ainda estiverem causando rolagem ou não se ajustando bem. */
+    /* Ex: `height: calc(630px * 4/3); width: calc(630px * 4/3);` */
+    max-width: 100vw;     /* Garante que o elemento não ultrapasse a largura da viewport. */
+    max-height: 100vh;    /* Garante que o elemento não ultrapasse a altura da viewport. */
+    object-fit: contain;  /* Redimensiona o conteúdo para caber na área, mantendo a proporção. */
+}
+
+/*
+ * @section Ícones Superiores à Direita (Play, Pessoas, Notificação, E-mail)
+ * Este bloco agrupa e estiliza os ícones de navegação ou ação posicionados no canto superior direito.
+ */
+/* NOTA: Não foi definido um seletor `.topRightIcons` neste CSS. Os estilos para os ícones
+ * (.playIcon, .peopleIcon, etc.) estão definidos individualmente com `position: absolute;`,
+ * o que pode ser menos flexível do que agrupá-los com flexbox/grid no HTML.
+ * Se o `.topRightIcons` do seu JSX estiver sendo usado, ele não tem estilos aqui.
+ */
+
+/*
+ * @section Ícone de Reprodução (Play Icon)
+ * Estilização do ícone de play.
+ */
+.playIcon {
+    position: absolute; /* Posiciona o ícone de forma absoluta. */
+    top: 10%;           /* Distância do topo do container (em porcentagem). */
+    right: 14%;         /* Distância da borda direita (em porcentagem). */
+    transform: translateX(-50%); /* Move o elemento para a esquerda em 50% de sua própria largura, centralizando-o horizontalmente em relação ao 'right'. */
+    color: white;       /* Cor do ícone. */
+    z-index: 100;       /* Z-index para a ordem de empilhamento. */
+    cursor: pointer;    /* Altera o cursor. */
+    /* Sugestão de Otimização: Se você tem um `.topRightIcons` no HTML, estes ícones poderiam ser `position: static;` e alinhados via flexbox/gap. */
+}
+
+/*
+ * @section Ícone de Pessoas/Perfis
+ * Estilização do ícone de pessoas.
+ */
+.peopleIcon {
+    position: absolute; /* Posiciona o ícone de forma absoluta. */
+    top: 10%;           /* Distância do topo. */
+    right: 11%;         /* Distância da borda direita. */
+    color: white;       /* Cor do ícone. */
+    z-index: 100;       /* Z-index. */
+    cursor: pointer;    /* Altera o cursor. */
+}
+
+/*
+ * @section Ícone de Notificações
+ * Estilização do ícone de notificações.
+ */
+.notificationIcon {
+    position: absolute; /* Posiciona o ícone de forma absoluta. */
+    top: 10%;           /* Distância do topo. */
+    right: 8%;          /* Distância da borda direita. */
+    color: white;       /* Cor do ícone. */
+    z-index: 100;       /* Z-index. */
+    cursor: pointer;    /* Altera o cursor. */
+}
+
+/*
+ * @section Ícone de E-mail/Mensagens
+ * Estilização do ícone de e-mail.
+ */
+.emailIcon {
+    position: absolute; /* Posiciona o ícone de forma absoluta. */
+    top: 10%;           /* Distância do topo. */
+    right: 5%;          /* Distância da borda direita. */
+    color: white;       /* Cor do ícone. */
+    z-index: 100;       /* Z-index. */
+    cursor: pointer;    /* Altera o cursor. */
+}
+
+/*
+ * @section Efeitos de Hover para Ícones Superiores
+ * Estilos aplicados quando o mouse passa sobre os ícones de ação/navegação superiores.
+ */
+.playIcon:hover,
+.peopleIcon:hover,
+.notificationIcon:hover,
+.emailIcon:hover {
+    background-color: rgba(255, 255, 255, 0.4); /* Adiciona um fundo semi-transparente no hover. */
+}
+
+/*
+ * @section Botão de Retorno
+ * Estiliza o botão de "voltar para login", posicionado no canto inferior esquerdo.
+ */
+.returnButton {
+    position: absolute; /* Posiciona o botão de forma absoluta. */
+    left: 20px;         /* Distância da borda esquerda. */
+    bottom: 20px;       /* Distância da borda inferior. */
+    background-color: #FFC107; /* Cor de fundo amarela. */
+    color: #000;        /* Cor do texto preta. */
+    border: none;       /* Sem borda. */
+    padding: 12px 24px; /* Preenchimento interno (vertical, horizontal). */
+    border-radius: 30px; /* Bordas arredondadas. */
+    font-size: 1rem;    /* Tamanho da fonte relativo. */
+    font-weight: 600;   /* Peso da fonte. */
+    text-decoration: none; /* Remove sublinhado (se fosse um link). */
+    cursor: pointer;    /* Altera o cursor. */
+    transition: all 0.3s ease; /* Transição suave para todas as propriedades. */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Sombra para profundidade. */
+    z-index: 1001;      /* Z-index muito alto, garantindo que esteja acima do Sidebar. */
+    display: flex;      /* Habilita flexbox para alinhar o ícone e o texto. */
+    align-items: center; /* Centraliza os itens verticalmente. */
+    gap: 8px;           /* Espaçamento entre o ícone e o texto. */
+    /* Sugestão de Otimização: Se você está usando zoom de 75%, considere escalar esses valores aqui também.
+     * Ex: `left: calc(20px * 4/3); bottom: calc(20px * 4/3); padding: calc(12px * 4/3) calc(24px * 4/3);`
+     * E adicionar um `height` fixo (e escalado) se for usado em cálculos de altura do Sidebar.
+     */
+}
+
+/*
+ * @section Efeitos de Interação para o Botão de Retorno
+ * Estilos aplicados no hover e clique ativo.
+ */
+.returnButton:hover {
+    background-color: #ffca28;                 /* Cor de fundo mais clara no hover. */
+    transform: translateY(-2px);               /* Move o botão 2px para cima no hover. */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25); /* Sombra mais pronunciada no hover. */
+}
+
+.returnButton:active {
+    transform: translateY(0);                  /* Retorna o botão à posição original ao ser clicado. */
+}
+
+/*
+ * @section Ícone Interno do Botão de Retorno
+ * Estilização do ícone de seta dentro do botão de retorno.
+ */
+.returnIcon {
+    font-size: 1.2rem; /* Tamanho do ícone relativo ao font-size do pai. */
+}

@@ -1,0 +1,98 @@
+/*
+ * Arquivo de Estilo CSS Modular para o Componente Sidebar.
+ * @description Define a aparência e o comportamento visual do menu lateral da aplicação,
+ * incluindo seu layout, cores, interatividade e otimizações de rolagem.
+ * @module Sidebar.module.css
+ */
+
+/* Estilos para o contêiner principal do Sidebar. */
+.sidebar {
+  width: 160px; /* Largura fixa do menu lateral, baseada em um cálculo de escala. */
+  height: 100%; /* Garante que o Sidebar ocupe 100% da altura do seu wrapper (`.sidebarWrapper`). */
+  background: linear-gradient(180deg, #6C93F4 0%, #4D3DC2 100%); /* Fundo com gradiente linear do azul claro ao roxo. */
+  border-radius: calc(20px * 4/3); /* Bordas arredondadas calculadas para manter a escala. */
+  padding: calc(15px * 4/3) 0; /* Espaçamento interno superior e inferior, com lados sem padding. */
+  display: flex; /* Utiliza Flexbox para organizar os itens do menu. */
+  flex-direction: column; /* Organiza os itens em uma coluna vertical. */
+  align-items: center; /* Centraliza os itens horizontalmente dentro do Sidebar. */
+  gap: calc(15px * 4/3); /* Espaçamento entre os itens do menu. */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra para dar profundidade ao Sidebar. */
+  border: calc(1px * 4/3) dashed rgba(255, 255, 255, 0.5); /* Borda tracejada sutil com transparência. */
+  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura/altura total. */
+
+  /* --- REGRAS PARA ESCONDER A BARRA DE ROLAGEM, mantendo a funcionalidade de rolagem. --- */
+  overflow-y: scroll; /* Permite a rolagem vertical se o conteúdo exceder a altura do Sidebar. */
+
+  /* Para navegadores baseados em WebKit (Chrome, Safari, Edge moderno). */
+  &::-webkit-scrollbar {
+    width: 0; /* Define a largura da barra de rolagem como zero para escondê-la. */
+    background: transparent; /* Garante que o fundo da barra de rolagem seja transparente. */
+  }
+
+  /* Para navegadores Firefox. */
+  scrollbar-width: none; /* Propriedade específica do Firefox para esconder a barra de rolagem. */
+
+  /* Para navegadores IE/Edge legado (não padronizado, mas para compatibilidade). */
+  -ms-overflow-style: none; /* Propriedade da Microsoft para esconder a barra de rolagem. */
+}
+
+/* Estilos para cada item individual dentro do menu lateral (ícone + texto). */
+.menuItem {
+  display: flex; /* Utiliza Flexbox para alinhar ícone e texto. */
+  flex-direction: column; /* Organiza o ícone acima do texto. */
+  align-items: center; /* Centraliza o ícone e o texto horizontalmente. */
+  justify-content: center; /* Centraliza o ícone e o texto verticalmente (se houver espaço). */
+  width: 100%; /* Ocupa a largura total do Sidebar. */
+  padding: 10px 0; /* Espaçamento interno superior/inferior para o conteúdo do item. */
+  cursor: pointer; /* Indica que o item é clicável. */
+  transition: background-color 0.3s ease, transform 0.2s ease; /* Transições suaves para efeitos de hover. */
+}
+
+/* Efeitos de hover para os itens do menu. */
+.menuItem:hover {
+  background-color: rgba(255, 255, 255, 0.1); /* Fundo sutilmente translúcido branco no hover. */
+  transform: scale(1.02); /* Leve aumento no tamanho do item no hover, para feedback visual. */
+}
+
+/* Estilos para as imagens dos ícones dentro dos itens do menu. */
+.menuIcon {
+  width: 60px; /* Tamanho fixo da largura dos ícones. */
+  height: 60px; /* Tamanho fixo da altura dos ícones, para manter a proporção de um quadrado. */
+  border-radius: 50%; /* Aplica borda arredondada, útil para ícones de avatar. */
+  object-fit: cover; /* Garante que a imagem preencha o espaço sem distorcer, cortando se necessário. */
+  margin-bottom: 5px; /* Espaçamento entre o ícone e o texto abaixo dele. */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Sombra para dar um efeito de "sticker" ou profundidade. */
+  border: 2px solid white; /* Borda branca para o efeito de "sticker". */
+}
+
+/* Estilo específico para o primeiro ícone do menu (presumivelmente o avatar),
+ * com uma borda e fundo ligeiramente diferentes para destaque. */
+.menuItem:first-child .menuIcon {
+  background-color: #f0f0f0; /* Fundo mais claro para o ícone do avatar. */
+  border: 3px solid #E0E0E0; /* Borda um pouco mais grossa e clara para o avatar. */
+}
+
+/* Estilos para o texto "MENU" abaixo dos ícones. */
+.menuText {
+  color: white; /* Cor do texto branca. */
+  font-size: 10px; /* Tamanho da fonte menor. */
+  font-weight: 600; /* Peso da fonte em negrito. */
+  text-transform: uppercase; /* Transforma o texto em maiúsculas. */
+  opacity: 0.8; /* Aplica uma leve transparência ao texto. */
+  letter-spacing: 0.5px; /* Pequeno espaçamento entre as letras. */
+}
+
+/* Estilos globais para o corpo da página.
+ * Estes estilos são mais adequados para um arquivo CSS global ou para o componente pai do Sidebar,
+ * caso o Sidebar não seja o único elemento na tela. Eles centralizam o conteúdo vertical e horizontalmente. */
+body {
+  margin: 0; /* Remove margens padrão do corpo. */
+  padding: 0; /* Remove padding padrão do corpo. */
+  font-family: Arial, sans-serif; /* Define a família da fonte padrão. */
+  background-color: #2F1B7B; /* Cor de fundo da página, um tom de roxo escuro. */
+  display: flex; /* Utiliza Flexbox para centralizar o conteúdo. */
+  justify-content: center; /* Centraliza o conteúdo horizontalmente. */
+  align-items: center; /* Centraliza o conteúdo verticalmente. */
+  min-height: 100vh; /* Garante que o corpo ocupe no mínimo 100% da altura da viewport. */
+  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura/altura total. */
+}

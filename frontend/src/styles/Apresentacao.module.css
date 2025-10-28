@@ -1,0 +1,48 @@
+.container {
+  min-height: 100vh;
+  width: 100vw;
+  background-image: radial-gradient(circle, #55B1E6CC, #26119DCC), url('../assets/background1.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  height: 377px;
+  width: 386px;
+  z-index: 100;
+}
+
+.advanceButton {
+  display: inline-block;
+  background-color: #FFC107;
+  color: #000;
+  border: none;
+  padding: 15px 40px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.advanceButton:hover {
+  background-color: #ffca28;
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+.advanceButton:active {
+  transform: translateY(0);
+}

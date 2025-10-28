@@ -1,0 +1,144 @@
+/*
+ * Arquivo de Estilo CSS Modular para a Página de Pré-Cadastro (PreCadastro).
+ * @description Define o layout e os estilos visuais dos elementos na tela de seleção de categoria de cadastro.
+ * @module PreCadastro.module.css
+ */
+
+/* Container principal que ocupa toda a altura e largura da viewport.
+ * Aplica um fundo com imagem e gradiente radial, garantindo que elementos
+ * posicionados absolutamente dentro dele sejam relativos a este container.
+ */
+.container {
+  min-height: 100vh; /* Garante que o container ocupe no mínimo 100% da altura da viewport. */
+  width: 100vw; /* Garante que o container ocupe 100% da largura da viewport. */
+  background-image: url('../assets/background1.svg'), radial-gradient(circle, #55B1E6, #26119D); /* Define imagem de fundo e um gradiente radial. */
+  background-size: cover; /* Redimensiona a imagem de fundo para cobrir todo o container. */
+  background-position: center; /* Centraliza a imagem de fundo. */
+  background-repeat: no-repeat; /* Evita a repetição da imagem de fundo. */
+  display: flex; /* Utiliza Flexbox para layout interno. */
+  align-items: center; /* Alinha os itens ao centro verticalmente. */
+  justify-content: flex-end; /* Alinha os itens ao final (direita) horizontalmente. */
+  position: relative; /* Define o contexto de posicionamento para elementos filhos absolutos. */
+  padding: 20px; /* Adiciona espaçamento interno ao redor do container. */
+  box-sizing: border-box; /* Inclui padding e borda no cálculo da largura/altura total. */
+}
+
+/* Imagem de logotipo posicionada na parte superior esquerda, ligeiramente fora da borda. */
+.logo {
+  position: absolute; /* Posicionamento absoluto em relação ao container pai. */
+  top: -20px; /* Deslocamento de -20px do topo (subindo). */
+  left: 210px; /* Distância da esquerda. */
+  height: 327px; /* Altura fixa do logotipo. */
+  width: 335px; /* Largura fixa do logotipo. */
+  z-index: 100; /* Garante que o logotipo fique acima de outros elementos de fundo. */
+}
+
+/* Imagem decorativa de um globo/mundo, posicionada no canto superior direito. */
+.mundoLogo {
+  position: absolute; /* Posicionamento absoluto. */
+  top: -10px; /* Deslocamento de -10px do topo. */
+  right: 10%; /* Distância de 10% da direita. */
+  height: 200px; /* Altura da ilustração. */
+  width: 200px; /* Largura da ilustração. */
+  z-index: 1000; /* Garante que esta ilustração fique na camada superior. */
+}
+
+/* Imagem da prancheta, posicionada na parte esquerda da tela. */
+.prancheta {
+  position: absolute; /* Posicionamento absoluto. */
+  top: 530px; /* Distância do topo. */
+  left: 69px; /* Distância da esquerda. */
+  transform: translateY(-50%); /* Centraliza verticalmente a imagem em relação ao seu próprio centro. */
+  width: 541px; /* Largura da prancheta. */
+  height: 603px; /* Altura da prancheta. */
+  padding: 40px; /* Adiciona espaçamento interno. */
+}
+
+/* Contêiner principal para a caixa de "login" ou seleção de categoria de pré-cadastro. */
+.loginBox {
+  width: 350px; /* Largura fixa da caixa. */
+  margin-right: 5%; /* Margem à direita, empurrando para a esquerda. */
+  display: flex; /* Utiliza Flexbox para organizar os elementos internos. */
+  flex-direction: column; /* Organiza os itens em uma coluna. */
+  align-items: center; /* Centraliza os itens horizontalmente. */
+  padding: 20px; /* Espaçamento interno. */
+  gap: 20px; /* Espaçamento entre os itens filhos. */
+  z-index: 200px; /* Garante que a caixa fique acima de alguns elementos de fundo. */
+}
+
+/* Contêiner interno com um fundo translúcido e bordas arredondadas. */
+.welcomeContainer {
+  background-color: #3C147966; /* Cor de fundo roxa com transparência. */
+  border-radius: 67px; /* Bordas arredondadas. */
+  width: 278px; /* Largura fixa do contêiner. */
+  height: 500px; /* Altura fixa do contêiner. */
+  padding: 40px; /* Espaçamento interno. */
+  backdrop-filter: blur(5px); /* Aplica um efeito de desfoque ao fundo. */
+}
+
+/* Título de boas-vindas. */
+.welcomeTitle {
+  color: white; /* Cor do texto branca. */
+  font-size: 24px; /* Tamanho da fonte. */
+  text-align: center; /* Alinha o texto ao centro. */
+  margin-bottom: 30px; /* Margem inferior. */
+}
+
+/* Grupo de botões, organizados em uma coluna. */
+.buttonGroup {
+  display: flex; /* Utiliza Flexbox. */
+  flex-direction: column; /* Organiza os itens em uma coluna. */
+  gap: 15px; /* Espaçamento entre os botões. */
+}
+
+/* Estilo para os botões de seleção de categoria (Responsável, Aluno). */
+.categoryButton {
+  background-color: transparent; /* Fundo transparente. */
+  border: 2px solid #FFC107; /* Borda amarela. */
+  color: white; /* Cor do texto branca. */
+  padding: 12px; /* Espaçamento interno. */
+  border-radius: 8px; /* Bordas levemente arredondadas. */
+  font-size: 16px; /* Tamanho da fonte. */
+  cursor: pointer; /* Indica que o elemento é clicável. */
+  transition: all 0.3s ease; /* Transição suave para efeitos de hover/active. */
+  width: 100%; /* Ocupa 100% da largura do contêiner pai. */
+  text-align: center; /* Alinha o texto ao centro. */
+}
+
+/* Efeito de hover para os botões de categoria: muda a cor de fundo e levanta o botão. */
+.categoryButton:hover {
+  background-color: #46d7f0; /* Cor de fundo azul claro no hover. */
+  transform: translateY(-2px); /* Move o botão 2px para cima. */
+}
+
+/* Efeito de clique ativo para os botões de categoria: retorna à posição original e muda ligeiramente a cor. */
+.categoryButton:active {
+  transform: translateY(0); /* Retorna o botão à sua posição original. */
+  background-color: #3bc5de; /* Cor de fundo azul um pouco mais escura no clique. */
+}
+
+/* Estilo para o botão de "Continuar". */
+.continueButton {
+  background-color: #FFC107; /* Cor de fundo amarela. */
+  color: black; /* Cor do texto preta. */
+  border: none; /* Remove a borda. */
+  padding: 15px; /* Espaçamento interno. */
+  border-radius: 8px; /* Bordas arredondadas. */
+  font-weight: bold; /* Texto em negrito. */
+  font-size: 16px; /* Tamanho da fonte. */
+  cursor: pointer; /* Indica que o elemento é clicável. */
+  margin-top: 20px; /* Margem superior. */
+  width: 100%; /* Ocupa 100% da largura do contêiner pai. */
+}
+
+/* Efeito de hover para o botão "Continuar": muda a cor de fundo e levanta o botão. */
+.continueButton:hover {
+  background-color: rgb(221, 168, 10); /* Cor de fundo amarela mais escura no hover. */
+  transform: translateY(-2px); /* Move o botão 2px para cima. */
+}
+
+/* Efeito de clique ativo para o botão "Continuar": retorna à posição original e mantém a cor de hover. */
+.continueButton:active {
+  transform: translateY(0); /* Retorna o botão à sua posição original. */
+  background-color: rgb(221, 168, 10); /* Mantém a cor de fundo amarela mais escura. */
+}

@@ -1,0 +1,120 @@
+.container {
+  min-height: 100vh;
+  width: 100vw;
+  background-image: radial-gradient(circle, #55B1E6CC, #26119DCC), url('../assets/background1.svg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  position: relative;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.logo {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  height: 377px;
+  width: 386px;
+  z-index: 100;
+}
+
+.loginBox {
+  margin-right: 5%;
+  width: 100%;
+  max-width: 350px;
+}
+
+.welcomeContainer {
+  background-color: #11304C80;
+  border-radius: 67px;
+  width: 278px;
+  height: 500px;
+  padding: 30px;
+  text-align: center;
+  backdrop-filter: blur(5px);
+}
+
+.welcomeContainer h1 {
+  font-size: 1.5rem;
+  color: white;
+  margin-bottom: 10px;
+}
+
+.welcomeContainer p {
+  font-size: 0.9rem;
+  color: white;
+  margin-bottom: 30px;
+}
+
+.inputGroup {
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid white;
+  margin-bottom: 25px;
+  padding-bottom: 8px;
+}
+
+.inputGroup input {
+  background: transparent;
+  border: none;
+  color: white;
+  width: 100%;
+  padding: 8px 5px;
+  font-size: 0.9rem;
+}
+
+.inputGroup input::placeholder {
+  color: white;
+  opacity: 0.8;
+}
+
+.icon {
+  color: white;
+  margin-right: 10px;
+  font-size: 1rem;
+}
+
+.loginBtn, .registerBtn {
+  width: 100%;
+  padding: 12px;
+  border-radius: 20px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  cursor: pointer;
+  margin-bottom: 15px;
+}
+
+.loginBtn {
+  background-color: #FFC107;
+  border: none;
+  color: #000;
+}
+
+.registerBtn {
+  background-color: transparent;
+  border: 2px solid #FFC107;
+  color: white;
+}
+
+.forgotPassword {
+  color: white;
+  font-size: 0.8rem;
+  margin: 15px 0;
+  cursor: pointer;
+}
+
+.socialText {
+  color: white;
+  font-size: 0.8rem;
+  margin: 20px 0 10px;
+}
+
+.googleIcon {
+  color: white;
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
