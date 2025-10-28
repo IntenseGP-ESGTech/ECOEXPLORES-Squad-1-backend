@@ -1,32 +1,91 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
+/* 
+    Utilizando memória para persistência de dados temporariamente
+*/
 let users = [];
 
 const register = async (req, res) => {
-  const { name, email, password, role } = req.body;
-  if (!name || !email || !password) return res.status(400).json({ message: 'Dados incompletos' });
+  const { role } = req.body;
 
-  if (users.find(u => u.email === email)) return res.status(409).json({ message: 'Email já cadastrado' });
+  if (!role) return res.status(400).json({ message: 'Role é obrigatória' });
 
-  const hashed = await bcrypt.hash(password, 10);
-  const user = { id: users.length + 1, name, email, password: hashed, role: role || 'student' };
-  users.push(user);
+  let userData = {};
 
-  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-  res.status(201).json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
+  switch (role) {
+    case 'school':
+      const { cnpj, nomeInstituicao, emailCorporativo, password: passSchool } = req.body;
+      if (!cnpj || !nomeInstituicao || !emailCorporativo || !passSchool)
+        return res.status(400).json({ message: 'Todos os campos da escola são obrigatórios' });
+      userData = { role, cnpj, nomeInstituicao, emailCorporativo, password: passSchool };
+      break;
+
+    case 'teacher':
+      const { nomeProfessor, cpf, instituicao, emailProfessor, password: passTeacher } = req.body;
+      if (!nomeProfessor || !cpf || !instituicao || !emailProfessor || !passTeacher)
+        return res.status(400).json({ message: 'Todos os campos do professor são obrigatórios' });
+      userData = { role, nomeProfessor, cpf, instituicao, emailProfessor, password: passTeacher };
+      break;
+
+    case 'parent':
+      const { nomeCompleto, cpfResponsavel, emailResponsavel, password: passParent } = req.body;
+      if (!nomeCompleto || !cpfResponsavel || !emailResponsavel || !passParent)
+        return res.status(400).json({ message: 'Todos os campos do responsável são obrigatórios' });
+      userData = { role, nomeCompleto, cpfResponsavel, emailResponsavel, password: passParent };
+      break;
+
+    case 'student':
+      const { nomeAluno, cpfAluno, matricula, emailAluno, password: passStudent } = req.body;
+      if (!nomeAluno || !cpfAluno || !matricula || !emailAluno || !passStudent)
+        return res.status(400).json({ message: 'Todos os campos do aluno são obrigatórios' });
+      userData = { role, nomeAluno, cpfAluno, matricula, emailAluno, password: passStudent };
+      break;
+
+    default:
+      return res.status(400).json({ message: 'Role inválida' });
+  }
+
+  const emailField =
+    role === 'school' ? 'emailCorporativo' :
+    role === 'teacher' ? 'emailProfessor' :
+    role === 'parent' ? 'emailResponsavel' :
+    'emailAluno';
+
+  if (users.find(u => u[emailField] === userData[emailField]))
+    return res.status(409).json({ message: 'Email já cadastrado' });
+
+  userData.password = await bcrypt.hash(userData.password, 10);
+  userData.id = users.length + 1;
+
+  users.push(userData);
+
+  const token = jwt.sign({ id: userData.id, role: userData.role }, process.env.JWT_SECRET || 'segredo', {
+    expiresIn: '1d',
+  });
+
+  res.status(201).json({ user: userData, token });
 };
 
 const login = async (req, res) => {
   const { email, password } = req.body;
-  const user = users.find(u => u.email === email);
+  if (!email || !password) return res.status(400).json({ message: 'Email e senha obrigatórios' });
+
+  const user = users.find(u =>
+    u.emailAluno === email ||
+    u.emailCorporativo === email ||
+    u.emailProfessor === email ||
+    u.emailResponsavel === email
+  );
+
   if (!user) return res.status(401).json({ message: 'Credenciais inválidas' });
 
   const match = await bcrypt.compare(password, user.password);
   if (!match) return res.status(401).json({ message: 'Credenciais inválidas' });
 
-  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES_IN });
-  res.json({ user: { id: user.id, name: user.name, email: user.email, role: user.role }, token });
+  const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || 'segredo', { expiresIn: '1d' });
+
+  res.json({ user, token });
 };
 
-module.exports = { register, login };
+module.exports = { register, login, users };
