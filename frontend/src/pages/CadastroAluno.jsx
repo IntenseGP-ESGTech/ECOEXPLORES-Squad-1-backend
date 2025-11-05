@@ -14,6 +14,9 @@ import logo from '../assets/logo.svg';
 import mundoLogo from '../assets/mundoLogo.svg';
 import mascote from '../assets/mascote.svg';
 
+// Services
+import { authService } from '../services/api';
+
 // Styles
 import styles from '../styles/CadastroAluno.module.css';
 
@@ -31,6 +34,8 @@ export function CadastroAluno() {
     const [email, setEmail] = useState('');
     const [matricula, setMatricula] = useState('');
     const [senha, setSenha] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     /**
@@ -55,9 +60,49 @@ export function CadastroAluno() {
      * Manipulador de submissão do formulário
      * @param {Object} e - Evento de submit
      */
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        navigate('/login');
+        setError('');
+        setLoading(true);
+
+        try {
+            // Remove formatação do CPF
+            const cleanCpf = cpf.replace(/\D/g, '');
+
+            if (!nome || !cleanCpf || !email || !matricula || !senha) {
+                setError('Por favor, preencha todos os campos');
+                setLoading(false);
+                return;
+            }
+
+            // Validação básica de CPF (11 dígitos)
+            if (cleanCpf.length !== 11) {
+                setError('CPF deve conter 11 dígitos');
+                setLoading(false);
+                return;
+            }
+
+            const userData = {
+                role: 'student',
+                nomeAluno: nome,
+                cpfAluno: cleanCpf,
+                emailAluno: email,
+                matricula: matricula,
+                password: senha,
+            };
+
+            const response = await authService.register(userData);
+            
+            // Salva o token
+            authService.setToken(response.token);
+            
+            // Redireciona para login ou home
+            navigate('/login');
+        } catch (err) {
+            setError(err.message || 'Erro ao realizar cadastro. Tente novamente.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     /**
@@ -83,8 +128,15 @@ export function CadastroAluno() {
                     <p className={styles.welcomeSubtitle}>Crie sua conta, leva menos de um minuto!</p>
                     
                     {/* Formulário de cadastro */}
-                    <form className={styles.formContainer} aria-label="Formulário de cadastro de aluno">
+                    <form className={styles.formContainer} aria-label="Formulário de cadastro de aluno" onSubmit={handleSubmit}>
                         
+                        {/* Mensagem de erro */}
+                        {error && (
+                            <div className={styles.errorMessage} role="alert">
+                                {error}
+                            </div>
+                        )}
+
                         {/* Campo: Nome completo */}
                         <div className={styles.inputGroup}>
                             <label htmlFor="nome">Aluno</label>
@@ -96,6 +148,7 @@ export function CadastroAluno() {
                                 placeholder="Digite seu nome completo"
                                 className={styles.inputField}
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
 
@@ -112,6 +165,7 @@ export function CadastroAluno() {
                                 maxLength={14}
                                 aria-required="true"
                                 aria-describedby="cpfHelp"
+                                disabled={loading}
                             />
                             <small id="cpfHelp" className="sr-only">Formato: 000.000.000-00</small>
                         </div>
@@ -127,6 +181,7 @@ export function CadastroAluno() {
                                 placeholder="Digite o e-mail corporativo" 
                                 className={styles.inputField}
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
                         
@@ -141,6 +196,7 @@ export function CadastroAluno() {
                                 placeholder="Digite sua matrícula" 
                                 className={styles.inputField}
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
                         
@@ -155,6 +211,7 @@ export function CadastroAluno() {
                                 placeholder="Crie uma senha segura" 
                                 className={styles.inputField}
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
                         
@@ -163,16 +220,17 @@ export function CadastroAluno() {
                             <button 
                                 type="submit" 
                                 className={styles.continueButton} 
-                                onClick={handleSubmit}
                                 aria-label="Continuar para login"
+                                disabled={loading}
                             >
-                                CONTINUAR
+                                {loading ? 'CADASTRANDO...' : 'CONTINUAR'}
                             </button>
                             <button 
                                 type="button" 
                                 className={styles.continueButton} 
                                 onClick={handleVoltar}
                                 aria-label="Voltar para seleção de cadastro"
+                                disabled={loading}
                             >
                                 VOLTAR
                             </button>

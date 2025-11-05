@@ -14,6 +14,9 @@ import logo from '../assets/logo.svg';
 import mundoLogo from '../assets/mundoLogo.svg';
 import mundoBaixo from '../assets/mundoBaixo.svg';
 
+// Services
+import { authService } from '../services/api';
+
 // Styles
 import styles from '../styles/CadastroEscola.module.css';
 
@@ -30,6 +33,8 @@ export function CadastroEscola() {
     const [email, setEmail] = useState('');
     const [instituicao, setInstituicao] = useState('');
     const [senha, setSenha] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
     /**
@@ -56,9 +61,48 @@ export function CadastroEscola() {
      * Manipulador de submissão do formulário
      * @param {Object} e - Evento de submit
      */
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        navigate('/login');
+        setError('');
+        setLoading(true);
+
+        try {
+            // Remove formatação do CNPJ
+            const cleanCnpj = cnpj.replace(/\D/g, '');
+
+            if (!cleanCnpj || !email || !instituicao || !senha) {
+                setError('Por favor, preencha todos os campos');
+                setLoading(false);
+                return;
+            }
+
+            // Validação básica de CNPJ (14 dígitos)
+            if (cleanCnpj.length !== 14) {
+                setError('CNPJ deve conter 14 dígitos');
+                setLoading(false);
+                return;
+            }
+
+            const userData = {
+                role: 'school',
+                cnpj: cleanCnpj,
+                nomeInstituicao: instituicao,
+                emailCorporativo: email,
+                password: senha,
+            };
+
+            const response = await authService.register(userData);
+            
+            // Salva o token
+            authService.setToken(response.token);
+            
+            // Redireciona para login ou home
+            navigate('/login');
+        } catch (err) {
+            setError(err.message || 'Erro ao realizar cadastro. Tente novamente.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     /**
@@ -84,8 +128,15 @@ export function CadastroEscola() {
                     <p className={styles.welcomeSubtitle}>Crie sua conta, leva menos de um minuto!</p>
                     
                     {/* Formulário de cadastro */}
-                    <form className={styles.formContainer} aria-label="Formulário de cadastro institucional">
+                    <form className={styles.formContainer} aria-label="Formulário de cadastro institucional" onSubmit={handleSubmit}>
                         
+                        {/* Mensagem de erro */}
+                        {error && (
+                            <div className={styles.errorMessage} role="alert">
+                                {error}
+                            </div>
+                        )}
+
                         {/* Campo: CNPJ com formatação automática */}
                         <div className={styles.inputGroup}>
                             <label htmlFor="cnpj">CNPJ</label>
@@ -99,6 +150,7 @@ export function CadastroEscola() {
                                 maxLength={18}
                                 aria-required="true"
                                 aria-describedby="cnpjHelp"
+                                disabled={loading}
                             />
                             <small id="cnpjHelp" className="sr-only">Formato: 00.000.000/0000-00</small>
                         </div>
@@ -114,6 +166,7 @@ export function CadastroEscola() {
                                 placeholder="Digite o e-mail corporativo" 
                                 className={styles.inputField}
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
                         
@@ -128,6 +181,7 @@ export function CadastroEscola() {
                                 placeholder="Digite o nome da instituição" 
                                 className={styles.inputField}
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
                         
@@ -142,6 +196,7 @@ export function CadastroEscola() {
                                 placeholder="Crie uma senha segura" 
                                 className={styles.inputField}
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
                         
@@ -150,16 +205,17 @@ export function CadastroEscola() {
                             <button 
                                 type="submit" 
                                 className={styles.continueButton} 
-                                onClick={handleSubmit}
                                 aria-label="Continuar para login"
+                                disabled={loading}
                             >
-                                CONTINUAR
+                                {loading ? 'CADASTRANDO...' : 'CONTINUAR'}
                             </button>
                             <button 
                                 type="button" 
                                 className={styles.continueButton} 
                                 onClick={handleVoltar}
                                 aria-label="Voltar para seleção de cadastro"
+                                disabled={loading}
                             >
                                 VOLTAR
                             </button>

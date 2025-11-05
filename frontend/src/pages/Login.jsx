@@ -5,12 +5,15 @@
  * @returns {JSX.Element} Componente de login com formulário e opções sociais
  */
 
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaGooglePlusG } from "react-icons/fa";
 
 // Assets
 import logo from '../assets/logo.svg';
+
+// Services
+import { authService } from '../services/api';
 
 // Styles
 import styles from '../styles/Login.module.css';
@@ -23,14 +26,42 @@ import styles from '../styles/Login.module.css';
  */
 export function Login() {
     const navigate = useNavigate();
+    const [identifier, setIdentifier] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
     /**
      * Manipulador de login
      * @param {React.FormEvent} e - Evento de submissão do formulário
      */
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        navigate('/home');
+        setError('');
+        setLoading(true);
+
+        try {
+            // Remove formatação do CPF/CNPJ para envio
+            const cleanIdentifier = identifier.replace(/\D/g, '');
+            
+            if (!cleanIdentifier || !password) {
+                setError('Por favor, preencha todos os campos');
+                setLoading(false);
+                return;
+            }
+
+            const response = await authService.login(cleanIdentifier, password);
+            
+            // Salva o token
+            authService.setToken(response.token);
+            
+            // Redireciona para home
+            navigate('/home');
+        } catch (err) {
+            setError(err.message || 'Erro ao fazer login. Verifique suas credenciais.');
+        } finally {
+            setLoading(false);
+        }
     };
 
     /**
@@ -65,15 +96,25 @@ export function Login() {
                         className={styles.formContainer}
                         aria-label="Formulário de login"
                     >
+                        {/* Mensagem de erro */}
+                        {error && (
+                            <div className={styles.errorMessage} role="alert">
+                                {error}
+                            </div>
+                        )}
+
                         {/* Grupo de entrada para credenciais */}
                         <div className={styles.inputGroup}>
                             <FaUser className={styles.icon} aria-hidden="true" />
                             <input 
                                 type="text" 
                                 placeholder="CNPJ / CPF" 
+                                value={identifier}
+                                onChange={(e) => setIdentifier(e.target.value)}
                                 required
                                 aria-label="Insira seu CNPJ ou CPF"
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
                         
@@ -82,9 +123,12 @@ export function Login() {
                             <input 
                                 type="password" 
                                 placeholder="senha" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
                                 required
                                 aria-label="Insira sua senha"
                                 aria-required="true"
+                                disabled={loading}
                             />
                         </div>
 
@@ -93,8 +137,9 @@ export function Login() {
                             type="submit" 
                             className={styles.loginBtn}
                             aria-label="Efetuar login"
+                            disabled={loading}
                         >
-                            LOGIN
+                            {loading ? 'ENTRANDO...' : 'LOGIN'}
                         </button>
                     </form>
 
