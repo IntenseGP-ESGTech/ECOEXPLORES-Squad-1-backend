@@ -74,7 +74,7 @@ npm test
 | Victor Simas        | [@victorsimasdev](https://github.com/victorsimasdev)               | 3º período  | Grupo            |
 | Julio Bezerra       | [@Juliobzr](https://github.com/Juliobzr)                           | 3º período  | Grupo            |
 | Paulo Henrique Alves de Barros Pereira       | [@phabp](https://github.com/phabp)                 | 3º período  | Grupo            |
-| Luiz henrique da silva neves    | [@](https://github.com/)             | 3º período  | Grupo            |
+| Luiz henrique da silva neves    | [@luiz380](https://github.com/)             | 3º período  | Grupo            |
 | Leonardo Felipe Demétrio Lins Nascimento       | [@](https://github.com/)                 | 3º período  | Grupo            |
 | Francisco Italo Machado Dantas    | [@](https://github.com/)             | 3º período  | Grupo            |
 
