@@ -15,6 +15,7 @@ O backend será responsável por fornecer a lógica do sistema, APIs e integraç
 - Geração de **JWT** para autenticação.
 - Estrutura preparada para testes unitários usando **Jest** e **Supertest**.
 - API pronta para integração com o frontend React.
+- Login social via **Google** utilizando Google Identity Services.
 
 ---
 
@@ -36,6 +37,7 @@ O backend deve ser executado na porta definida no `.env` (ou pipeline), e o fron
 
 - `POST /api/auth/register` → registro de usuários  
 - `POST /api/auth/login` → login de usuários  
+- `POST /api/auth/google` → login social via token retornado pelo Google  
 
 > O frontend original do projeto foi fornecido para integração com backend desenvolvido. Todos os créditos ao time responsável pelo frontend.
 
@@ -52,11 +54,12 @@ cd backend
 ```
 npm install
 ```
-3. Crie um arquivo .env na raiz do backend com as variáveis:
+3. Copie `backend/.env.example` para `backend/.env` e ajuste as variáveis:
 ```
 JWT_SECRET=uma_chave_secreta_para_teste
 PORT=4000
 CORS_ORIGIN=http://localhost:5173
+GOOGLE_CLIENT_ID=seu_client_id_do_google_cloud
 ```
 > Para gerar a JWT_SECRET pode utilizar o Node.js ```node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"```
 
@@ -64,6 +67,14 @@ CORS_ORIGIN=http://localhost:5173
 ```
 npm run dev
 ```
+
+5. Copie `frontend/.env.example` para `frontend/.env` e ajuste as variáveis:
+```
+VITE_API_URL=http://localhost:4000/api
+VITE_GOOGLE_CLIENT_ID=seu_client_id_do_google_cloud
+```
+
+> Use o mesmo `client_id` gerado no Google Cloud Console tanto no backend quanto no frontend.
 5. Para rodas os testes unitários:
 ```
 npm test

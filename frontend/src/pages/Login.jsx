@@ -5,12 +5,13 @@
  * @returns {JSX.Element} Componente de login com formulário e opções sociais
  */
 
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaUser, FaLock, FaGooglePlusG } from "react-icons/fa";
 
 // Assets
 import logo from '../assets/logo.svg';
+import { env } from '../config/env';
 
 // Services
 import { authService } from '../services/api';
@@ -30,6 +31,9 @@ export function Login() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [googleLoading, setGoogleLoading] = useState(false);
+    const googleButtonRef = useRef(null);
+    const googleClientId = env.googleClientId;
 
     /**
      * Manipulador de login
@@ -72,6 +76,90 @@ export function Login() {
         e.preventDefault();
         navigate('/precadastro');
     };
+
+    /**
+     * Callback disparado pelo Google ao finalizar a autenticação
+     * @param {google.accounts.id.CredentialResponse} credentialResponse
+     */
+    const handleGoogleCredential = useCallback(async (credentialResponse) => {
+        if (!credentialResponse?.credential) {
+            setError('Não foi possível obter o token do Google. Tente novamente.');
+            return;
+        }
+
+        try {
+            setGoogleLoading(true);
+            setError('');
+            const response = await authService.loginWithGoogle(credentialResponse.credential);
+            authService.setToken(response.token);
+            navigate('/home');
+        } catch (err) {
+            setError(err.message || 'Falha ao autenticar com o Google.');
+        } finally {
+            setGoogleLoading(false);
+        }
+    }, [navigate]);
+
+    /**
+     * Inicializa o script do Google Identity Services e renderiza o botão
+     */
+    useEffect(() => {
+        if (!googleClientId) {
+            console.warn('VITE_GOOGLE_CLIENT_ID não definido. Login com Google indisponível.');
+            return;
+        }
+
+        const renderButton = () => {
+            if (!window.google || !googleButtonRef.current) return;
+
+            window.google.accounts.id.initialize({
+                client_id: googleClientId,
+                callback: handleGoogleCredential,
+                ux_mode: 'popup',
+            });
+
+            window.google.accounts.id.renderButton(googleButtonRef.current, {
+                theme: 'outline',
+                size: 'large',
+                text: 'signin_with',
+                shape: 'pill',
+                width: 240,
+            });
+        };
+
+        const existingScript = document.getElementById('google-identity-services');
+        let listenerAttached = false;
+
+        if (existingScript) {
+            if (window.google) {
+                renderButton();
+            } else {
+                existingScript.addEventListener('load', renderButton);
+                listenerAttached = true;
+            }
+
+            return () => {
+                if (listenerAttached) {
+                    existingScript.removeEventListener('load', renderButton);
+                }
+            };
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://accounts.google.com/gsi/client';
+        script.async = true;
+        script.defer = true;
+        script.id = 'google-identity-services';
+        script.onload = renderButton;
+        document.body.appendChild(script);
+
+        return () => {
+            script.onload = null;
+            if (script.parentNode) {
+                script.parentNode.removeChild(script);
+            }
+        };
+    }, [googleClientId, handleGoogleCredential]);
 
     return (
         <div className={styles.container} aria-label="Página de login">
@@ -168,11 +256,22 @@ export function Login() {
                         aria-label="Opções de login social"
                     >
                         <p>Faça login com</p>
-                        <FaGooglePlusG 
-                            className={styles.googleIcon} 
-                            aria-label="Login com Google"
-                            role="img"
+                        <div className={styles.socialDivider} role="separator" aria-hidden="true" />
+                        <div 
+                            ref={googleButtonRef} 
+                            className={styles.googleButtonSlot}
+                            aria-live="polite"
                         />
+                        <div className={styles.googleHelper}>
+                            <FaGooglePlusG className={styles.googleIcon} aria-hidden="true" />
+                            <span>
+                                {googleClientId ? (
+                                    googleLoading ? 'Conectando...' : 'Clique no botão do Google'
+                                ) : (
+                                    'Configure o Google Client ID'
+                                )}
+                            </span>
+                        </div>
                     </div>
                 </div>
             </div>

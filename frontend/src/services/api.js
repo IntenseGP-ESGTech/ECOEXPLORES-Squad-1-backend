@@ -3,7 +3,9 @@
  * @module api
  */
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:4000/api';
+import { env } from '../config/env';
+
+const API_URL = env.apiUrl;
 
 /**
  * Função auxiliar para fazer requisições HTTP
@@ -67,6 +69,18 @@ export const authService = {
     return request('/auth/login', {
       method: 'POST',
       body: { identifier, password },
+    });
+  },
+
+  /**
+   * Faz login com credenciais do Google
+   * @param {string} credential - Token JWT retornado pelo Google Identity Services
+   * @returns {Promise<Object>} Dados do usuário e token
+   */
+  loginWithGoogle: async (credential) => {
+    return request('/auth/google', {
+      method: 'POST',
+      body: { credential },
     });
   },
 

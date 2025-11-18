@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { register, login } = require('../controllers/authController');
+const { register, login, loginWithGoogle } = require('../controllers/authController');
 
 /**
  * @swagger
@@ -172,5 +172,33 @@ router.post('/register', register);
  *         description: Credenciais inválidas
  */
 router.post('/login', login);
+
+/**
+ * @swagger
+ * /api/auth/google:
+ *   post:
+ *     summary: Autentica um usuário utilizando o token do Google
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - credential
+ *             properties:
+ *               credential:
+ *                 type: string
+ *                 description: Token JWT retornado pelo Google Identity Services
+ *     responses:
+ *       200:
+ *         description: Login via Google realizado com sucesso
+ *       400:
+ *         description: Token do Google ausente ou inválido
+ *       401:
+ *         description: Falha ao validar o token do Google
+ */
+router.post('/google', loginWithGoogle);
 
 module.exports = router;
