@@ -32,10 +32,10 @@ export function Sidebar({ toggleMenu, onNavigate }) {
         <span className={styles.menuText}>MENU</span> {/* Texto descritivo do item. */}
       </div>
 
-      {/* Item do Menu 2: Calendário (exemplo de item sem ação de navegação específica neste componente) */}
+      {/* Item do Menu 2: Calendário */}
       <div className={styles.menuItem} role="button" aria-label="Calendário">
         <img src={calendario} alt="Calendário" className={styles.menuIcon} />
-        <span className={styles.menuText}>MENU</span>
+        <span className={styles.menuText}>AGENDA</span>
       </div>
 
       {/* Item do Menu 3: Engrenagem (exemplo de item sem ação de navegação específica neste componente) */}
@@ -44,10 +44,15 @@ export function Sidebar({ toggleMenu, onNavigate }) {
         <span className={styles.menuText}>MENU</span>
       </div>
 
-      {/* Item do Menu 4: Documento (exemplo de item sem ação de navegação específica neste componente) */}
-      <div className={styles.menuItem} role="button" aria-label="Documentos">
-        <img src={documento} alt="Documentos" className={styles.menuIcon} />
-        <span className={styles.menuText}>MENU</span>
+      {/* Item do Menu 4: Documento - leva para a gestão de Trilhas */}
+      <div
+        className={styles.menuItem}
+        onClick={() => onNavigate('/trilhas')}
+        role="button"
+        aria-label="Gerenciar Trilhas"
+      >
+        <img src={documento} alt="Trilhas" className={styles.menuIcon} />
+        <span className={styles.menuText}>TRILHAS</span>
       </div>
 
       {/* Item do Menu 5: E-mail (exemplo de item sem ação de navegação específica neste componente) */}

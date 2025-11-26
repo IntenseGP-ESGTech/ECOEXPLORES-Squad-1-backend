@@ -5,8 +5,9 @@ const auth = (req, res, next) => {
   if (!authHeader) return res.status(401).json({ message: 'Não autorizado' });
 
   const token = authHeader.split(' ')[1];
+  const secret = process.env.JWT_SECRET || 'segredo';
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET);
+    const payload = jwt.verify(token, secret);
     req.user = payload;
     next();
   } catch {

@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const authRoutes = require('./routes/auth');
+const trailRoutes = require('./routes/trails');
 const swaggerDocs = require('../swagger');
 
 const app = express();
@@ -16,6 +17,7 @@ app.use(cors({
 swaggerDocs(app);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/trilhas', trailRoutes);
 
 app.get('/', (req, res) => res.send('Backend rodando.'));
 

@@ -19,6 +19,7 @@ import { CadastroResponsavel } from './pages/CadastroResponsavel'; // Componente
 import { CadastroAluno } from './pages/CadastroAluno';       // Componente do formulário de cadastro para alunos.
 import { Home } from './pages/Home';                         // Componente do dashboard principal da aplicação.
 import { HomeOds } from './pages/HomeOds';                   // Componente de um dashboard secundário, possivelmente focado em Objetivos de Desenvolvimento Sustentável (ODS).
+import { Trilhas } from './pages/Trilhas';                  // Tela de gestão das trilhas de aprendizado (CRUD).
 
 /**
  * Componente principal da aplicação que define a estrutura de rotas.
@@ -56,6 +57,7 @@ export function App() {
          */}
         <Route path="/home" element={<Home />} />               {/* Rota para o dashboard principal. */}
         <Route path="/HomeOds" element={<HomeOds />} />         {/* Rota para o dashboard focado em ODS. */}
+        <Route path="/trilhas" element={<Trilhas />} />         {/* Rota para a gestão de trilhas de aprendizado. */}
         <Route path="/apresentacao" element={<Apresentacao />} /> {/* Rota duplicada para Apresentacao. Considerar se é intencional ou se a rota "/" já é suficiente. */}
       </Routes>
     </Router>

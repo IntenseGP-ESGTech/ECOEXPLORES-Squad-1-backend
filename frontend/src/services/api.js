@@ -108,5 +108,34 @@ export const authService = {
   },
 };
 
-export default { authService };
+/**
+ * Serviço para gerenciamento de trilhas de aprendizado
+ */
+export const trailService = {
+  list: async () => {
+    return request('/trilhas');
+  },
+  getById: async (id) => {
+    return request(`/trilhas/${id}`);
+  },
+  create: async (payload) => {
+    return request('/trilhas', {
+      method: 'POST',
+      body: payload,
+    });
+  },
+  update: async (id, payload) => {
+    return request(`/trilhas/${id}`, {
+      method: 'PUT',
+      body: payload,
+    });
+  },
+  remove: async (id) => {
+    return request(`/trilhas/${id}`, {
+      method: 'DELETE',
+    });
+  },
+};
+
+export default { authService, trailService };
 
